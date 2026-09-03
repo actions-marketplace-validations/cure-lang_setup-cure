@@ -1,0 +1,36 @@
+name: 'Setup Cure'
+description: 'Set up Cure language environment and add cure executable to PATH'
+author: 'Cure Language Team'
+branding:
+  icon: 'code'
+  color: 'purple'
+
+inputs:
+  cure-version:
+    description: 'Version of Cure to set up (e.g. "latest", "0.34.1", "v0.34.1", "main")'
+    required: false
+    default: 'latest'
+  version:
+    description: 'Alias for cure-version'
+    required: false
+    default: ''
+  github-token:
+    description: 'GitHub token for API authentication to avoid rate limits'
+    required: false
+    default: ${{ github.token }}
+  cache:
+    description: 'Enable caching of installed Cure binary and standard library'
+    required: false
+    default: 'true'
+
+outputs:
+  cure-version:
+    description: 'The resolved version of Cure installed'
+  cure-path:
+    description: 'The directory path where the cure executable is installed'
+  cache-hit:
+    description: 'Whether Cure was restored from the tool cache'
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
