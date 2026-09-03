@@ -1,6 +1,6 @@
 {
   "name": "setup-cure",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "GitHub Action to set up the Cure programming language",
   "main": "dist/index.js",
   "scripts": {
