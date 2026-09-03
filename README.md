@@ -30,10 +30,10 @@ steps:
 ### Specific Version
 
 ```yaml
-  - name: Set up Cure v0.34.1
+  - name: Set up Cure v0.34.2
     uses: cure-lang/setup-cure@v1
     with:
-      cure-version: '0.34.1'
+      cure-version: '0.34.2'
 ```
 
 ### Matrix Builds
@@ -61,7 +61,7 @@ jobs:
 
 | Input | Description | Default |
 | --- | --- | --- |
-| `cure-version` | Version of Cure to set up (`latest`, `0.34.1`, `v0.34.1`, etc.) | `latest` |
+| `cure-version` | Version of Cure to set up (`latest`, `0.34.2`, `v0.34.2`, etc.) | `latest` |
 | `version` | Alias for `cure-version` | `''` |
 | `github-token` | GitHub API token to avoid rate limits when resolving releases | `${{ github.token }}` |
 | `cache` | Enable tool caching for installed Cure binaries and stdlib | `true` |
@@ -80,7 +80,7 @@ This action automatically sets the following environment variables for subsequen
 
 * `CURE_HOME`: Points to the installation directory containing Cure binaries and standard library files (`priv/std`, `priv/ebin`).
 * `CURE_LIB`: Points to `CURE_HOME/priv/ebin` containing compiled stdlib BEAM modules.
-* `CURE_VERSION`: The resolved version string (e.g. `0.34.1`).
+* `CURE_VERSION`: The resolved version string (e.g. `0.34.2`).
 
 ## License
 

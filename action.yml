@@ -7,7 +7,7 @@ branding:
 
 inputs:
   cure-version:
-    description: 'Version of Cure to set up (e.g. "latest", "0.34.1", "v0.34.1", "main")'
+    description: 'Version of Cure to set up (e.g. "latest", "0.34.2", "v0.34.2", "main")'
     required: false
     default: 'latest'
   version:

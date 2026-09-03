@@ -37,7 +37,7 @@ async function getLatestVersion(token) {
     core.warning(`Failed to fetch tags from GitHub API: ${err.message}`);
   }
 
-  return 'v0.34.1';
+  return 'v0.34.2';
 }
 
 async function resolveVersion(inputVersion, token) {
@@ -149,6 +149,14 @@ async function run() {
         await exec.exec('mix', ['compile'], { cwd: actualSourceDir });
 
         const cureEscriptPath = path.join(actualSourceDir, 'cure');
+        if (!fs.existsSync(cureEscriptPath)) {
+          try {
+            await exec.exec('mix', ['cure.escript'], { cwd: actualSourceDir });
+          } catch (e) {
+            await exec.exec('mix', ['escript.build'], { cwd: actualSourceDir });
+          }
+        }
+
         if (!fs.existsSync(cureEscriptPath)) {
           throw new Error(`Build failed: executable not found at ${cureEscriptPath}`);
         }
