@@ -80,24 +80,46 @@ async function run() {
       const tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'setup-cure-'));
       let installedPath = '';
 
-      // 1. Try prebuilt release binary assets
-      const assetNames = [
-        `cure-${tag}-${platform}-${arch}.tar.gz`,
-        `cure-${cleanVersion}-${platform}-${arch}.tar.gz`,
-        `cure-${platform}-${arch}.tar.gz`,
+      // 1. Try prebuilt release binary assets (archives or raw escript binaries)
+      const archVariants = arch === 'x64' ? ['x86_64', 'x64', 'amd64'] : arch === 'arm64' ? ['arm64', 'aarch64'] : [arch];
+      const assetNames = [];
+
+      for (const a of archVariants) {
+        assetNames.push(
+          `cure-${tag}-${platform}-${a}`,
+          `cure-${cleanVersion}-${platform}-${a}`,
+          `cure-${platform}-${a}`,
+          `cure-${tag}-${platform}-${a}.tar.gz`,
+          `cure-${cleanVersion}-${platform}-${a}.tar.gz`,
+          `cure-${platform}-${a}.tar.gz`
+        );
+      }
+      assetNames.push(
         `cure-${tag}.tar.gz`,
-        `cure-${cleanVersion}.tar.gz`
-      ];
+        `cure-${cleanVersion}.tar.gz`,
+        `cure-${tag}`,
+        `cure-${cleanVersion}`,
+        `cure.escript`,
+        `cure`
+      );
 
       for (const assetName of assetNames) {
         const downloadUrl = `https://github.com/cure-lang/cure-lang/releases/download/${tag}/${assetName}`;
         try {
           core.info(`Attempting download from: ${downloadUrl}`);
-          const downloadedArchive = await tc.downloadTool(downloadUrl);
-          if (downloadedArchive) {
+          const downloadedAsset = await tc.downloadTool(downloadUrl);
+          if (downloadedAsset) {
             core.info(`Successfully downloaded prebuilt release asset: ${assetName}`);
-            const extracted = await tc.extractTar(downloadedArchive, tempDir);
-            installedPath = extracted;
+            if (assetName.endsWith('.tar.gz') || assetName.endsWith('.tgz')) {
+              const extracted = await tc.extractTar(downloadedAsset, tempDir);
+              installedPath = extracted;
+            } else {
+              // Standalone escript / executable binary asset
+              const targetEscriptPath = path.join(tempDir, 'cure');
+              await io.cp(downloadedAsset, targetEscriptPath);
+              await exec.exec('chmod', ['+x', targetEscriptPath]);
+              installedPath = tempDir;
+            }
             break;
           }
         } catch (e) {

@@ -23247,22 +23247,42 @@ async function run() {
       setOutput("cache-hit", "false");
       const tempDir = await import_fs2.default.promises.mkdtemp(import_path.default.join(import_os3.default.tmpdir(), "setup-cure-"));
       let installedPath = "";
-      const assetNames = [
-        `cure-${tag}-${platform2}-${arch3}.tar.gz`,
-        `cure-${cleanVersion}-${platform2}-${arch3}.tar.gz`,
-        `cure-${platform2}-${arch3}.tar.gz`,
+      const archVariants = arch3 === "x64" ? ["x86_64", "x64", "amd64"] : arch3 === "arm64" ? ["arm64", "aarch64"] : [arch3];
+      const assetNames = [];
+      for (const a of archVariants) {
+        assetNames.push(
+          `cure-${tag}-${platform2}-${a}`,
+          `cure-${cleanVersion}-${platform2}-${a}`,
+          `cure-${platform2}-${a}`,
+          `cure-${tag}-${platform2}-${a}.tar.gz`,
+          `cure-${cleanVersion}-${platform2}-${a}.tar.gz`,
+          `cure-${platform2}-${a}.tar.gz`
+        );
+      }
+      assetNames.push(
         `cure-${tag}.tar.gz`,
-        `cure-${cleanVersion}.tar.gz`
-      ];
+        `cure-${cleanVersion}.tar.gz`,
+        `cure-${tag}`,
+        `cure-${cleanVersion}`,
+        `cure.escript`,
+        `cure`
+      );
       for (const assetName of assetNames) {
         const downloadUrl = `https://github.com/cure-lang/cure-lang/releases/download/${tag}/${assetName}`;
         try {
           info(`Attempting download from: ${downloadUrl}`);
-          const downloadedArchive = await downloadTool(downloadUrl);
-          if (downloadedArchive) {
+          const downloadedAsset = await downloadTool(downloadUrl);
+          if (downloadedAsset) {
             info(`Successfully downloaded prebuilt release asset: ${assetName}`);
-            const extracted = await extractTar(downloadedArchive, tempDir);
-            installedPath = extracted;
+            if (assetName.endsWith(".tar.gz") || assetName.endsWith(".tgz")) {
+              const extracted = await extractTar(downloadedAsset, tempDir);
+              installedPath = extracted;
+            } else {
+              const targetEscriptPath = import_path.default.join(tempDir, "cure");
+              await cp(downloadedAsset, targetEscriptPath);
+              await exec("chmod", ["+x", targetEscriptPath]);
+              installedPath = tempDir;
+            }
             break;
           }
         } catch (e) {
