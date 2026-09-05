@@ -15,8 +15,8 @@ steps:
   - name: Set up Erlang & Elixir
     uses: erlef/setup-beam@v1
     with:
-      elixir-version: '1.18'
-      otp-version: '27'
+      elixir-version: '1.20'
+      otp-version: '29'
 
   - name: Set up Cure
     uses: cure-lang/setup-cure@v1
@@ -49,8 +49,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: erlef/setup-beam@v1
         with:
-          elixir-version: '1.18'
-          otp-version: '27'
+          elixir-version: '1.20'
+          otp-version: '29'
       - uses: cure-lang/setup-cure@v1
         with:
           cure-version: ${{ matrix.cure-version }}
